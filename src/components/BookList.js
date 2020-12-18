@@ -1,59 +1,41 @@
 import React from "react";
-//import Rating from "./Rating";
+import { FaTrash, FaEdit } from "react-icons/fa";
+import Rating from "./Rating";
 
 export default function BookList({
   book,
   toggleIsRead,
   startEditing,
   deleteBook,
-  setIsOpen,
-  // setHover,
-  // setRating,
-  // hover,
-  // rating,
+  rate,
 }) {
   return (
-    <div className='book-wrapper flex-wrapper'>
-      <div onClick={() => toggleIsRead(book)} style={{ flex: 7 }}>
-        {book.isRead === false ? (
-          <span>{book.title}</span>
-        ) : (
-          <strike className='text-warning'>{book.title}</strike>
-        )}
-      </div>
-      {/* <div className='rating'>
-        <Rating
-          setRating={setRating}
-          setHover={setHover}
-          rating={rating}
-          hover={hover}
-        />
-      </div> */}
+    <div className='book-wrapper'>
+      <div className='book'>
+        <div onClick={() => toggleIsRead(book)}>
+          {book.isRead === false ? (
+            <span>{book.title}</span>
+          ) : (
+            <strike className='text-danger'>{book.title}</strike>
+          )}
+        </div>
+        <div className='rating'>
+          <Rating id={book.id} rate={rate} value={book.rating} />
+        </div>
+        <div className='edit-delete'>
+          <div>
+            <FaEdit
+              size='25'
+              color='green'
+              className='fa fa-edit'
+              onClick={() => startEditing(book)}
+            />
+          </div>
 
-      <div style={{ flex: 1 }}>
-        <button
-          className='btn btn-sm btn-outline-info'
-          onClick={() => startEditing(book)}
-        >
-          Edit
-        </button>
-      </div>
-
-      <div style={{ flex: 1 }}>
-        <button
-          className='btn btn-sm btn-outline-dark delete'
-          onClick={() => deleteBook(book)}
-        >
-          -
-        </button>
-      </div>
-      <div style={{ flex: 1 }}>
-        <button
-          className='btn btn-sm btn-outline-dark delete'
-          onClick={() => setIsOpen(true)}
-        >
-          +
-        </button>
+          <div className='fa fa-delete'>
+            <FaTrash size='25' color='red' onClick={() => deleteBook(book)} />
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import "./App.css";
 import React from "react";
+import { FaPlus } from "react-icons/fa";
 import MakeBook from "./components/MakeBook";
 import BookList from "./components/BookList";
 
@@ -12,20 +13,22 @@ const App = () => {
   };
   const [book, setActiveBook] = React.useState(activebook);
   const [books, setBooks] = React.useState([]);
-  // const [rating, setRating] = React.useState(0);
-  // const [hover, setHover] = React.useState(null);
   const [isOpen, setIsOpen] = React.useState(false);
 
   // fetch books upon mounting
+  const alreadyRan = React.useRef(false);
   React.useEffect(() => {
-    fetchBooks();
-  }, []);
+    !alreadyRan.current && fetchBooks();
+    return () => {
+      alreadyRan.current = true;
+    };
+  }, [alreadyRan]);
 
   //
   const API_URL = process.env.REACT_APP_DJANGO_URL;
   // get all books
   function fetchBooks() {
-    fetch(API_URL + "/book-list/")
+    fetch(API_URL + "/list/")
       .then((response) => response.json())
       .then((data) => setBooks(data));
   }
@@ -42,10 +45,10 @@ const App = () => {
   // save book
   const handleSubmit = (e) => {
     e.preventDefault();
-    let url = API_URL + "/book-create/";
+    let url = API_URL + "/create/";
 
     if (book.editing) {
-      url = API_URL + `/book-update/${book.id}/`;
+      url = API_URL + `/update/${book.id}/`;
       setActiveBook({ ...book, editing: false });
     }
     fetch(url, {
@@ -82,16 +85,28 @@ const App = () => {
   }
 
   // toggle isRead
+  const rateBook = (id, rating) => {
+    book.rating = rating;
+    let url = API_URL + `/update/${id}/`;
+    let updbook = { rating: book.rating };
+    fetch(url, {
+      method: "PATCH",
+      headers: {
+        "Content-type": "application/json",
+        "X-CSRFToken": getCookie("csrftoken"),
+      },
+      body: JSON.stringify(updbook),
+    }).then(() => {
+      fetchBooks();
+    });
+  };
+  // toggle isRead
   const toggleIsRead = (book) => {
     book.isRead = !book.isRead;
-    let url = API_URL + `/book-update/${book.id}/`;
-    let updbook = {
-      isRead: book.isRead,
-      title: book.title,
-      author: book.author,
-    };
+    let url = API_URL + `/update/${book.id}/`;
+    let updbook = { isRead: book.isRead };
     fetch(url, {
-      method: "POST",
+      method: "PATCH",
       headers: {
         "Content-type": "application/json",
         "X-CSRFToken": getCookie("csrftoken"),
@@ -104,7 +119,7 @@ const App = () => {
 
   // delete a book
   function deleteBook(book) {
-    fetch(API_URL + `/book-delete/${book.id}/`, {
+    fetch(API_URL + `/delete/${book.id}/`, {
       method: "DELETE",
       headers: {
         "Content-type": "application/json",
@@ -125,8 +140,31 @@ const App = () => {
   };
 
   return (
-    <div className='bg-light book-container'>
-      <div id='task-container'>
+    <div className='book-container'>
+      <div className='add-btn-container'>
+        {!isOpen && (
+          <div className='add-btn'>
+            <FaPlus size='25' onClick={() => setIsOpen(true)} />
+          </div>
+        )}
+      </div>
+
+      <div className='book-wrapper'>
+        {books.map((book) => {
+          return (
+            <BookList
+              key={book.id}
+              book={book}
+              toggleIsRead={toggleIsRead}
+              setIsOpen={setIsOpen}
+              deleteBook={deleteBook}
+              startEditing={startEditing}
+              rate={rateBook}
+            />
+          );
+        })}
+      </div>
+      <div id='form-container'>
         {isOpen && (
           <MakeBook
             handleChange={handleChange}
@@ -136,25 +174,6 @@ const App = () => {
             setActiveBook={setActiveBook}
           />
         )}
-
-        <div id='list-wrapper'>
-          {books.map((book) => {
-            return (
-              <BookList
-                key={book.id}
-                book={book}
-                toggleIsRead={toggleIsRead}
-                setIsOpen={setIsOpen}
-                deleteBook={deleteBook}
-                startEditing={startEditing}
-                // setRating={setRating}
-                // setHover={setHover}
-                // rating={rating}
-                // hover={hover}
-              />
-            );
-          })}
-        </div>
       </div>
     </div>
   );

@@ -5,7 +5,7 @@ export default function MakeBook(props) {
     <div className='form-wrapper'>
       <form onSubmit={props.handleSubmit} className='form'>
         <div className='flex-wrapper'>
-          <div style={{ flex: 5, marginRight: "20px" }}>
+          <div style={{ flex: 5, marginBottom: "7px" }}>
             <input
               onChange={props.handleChange}
               className='form-control'
@@ -28,20 +28,30 @@ export default function MakeBook(props) {
             />
           </div>
 
-          <div style={{ flex: 1 }}>
-            <button type='submit' className='btn btn-warning ml-3' id='submit'>
-              {props.book.id ? "Update" : "submit"}
+          <div className='submit-close'>
+            <button
+              className='btn btn-outline-dark  '
+              onClick={() => {
+                props.open(false);
+                props.setActiveBook({ ...props, editing: false });
+              }}
+            >
+              close
             </button>
+            <div>
+              <button type='submit' className='btn btn-warning' id='submit'>
+                {props.book.id ? "Update" : "submit"}
+              </button>
+            </div>
           </div>
-          <button
-            className='btn btn-sm btn-outline-dark ml-3'
+
+          {/* <AiFillCloseSquare
+            size='50'
             onClick={() => {
               props.open(false);
               props.setActiveBook({ ...props, editing: false });
             }}
-          >
-            close
-          </button>
+          /> */}
         </div>
       </form>
     </div>
