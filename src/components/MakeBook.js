@@ -1,6 +1,8 @@
 import React from "react";
+import { useSelector } from "react-redux";
 
 export default function MakeBook(props) {
+  const { user } = useSelector((state) => state.auth);
   return (
     <div className='form-wrapper'>
       <form onSubmit={props.handleSubmit} className='form'>
@@ -20,7 +22,7 @@ export default function MakeBook(props) {
             <input
               onChange={props.handleChange}
               className='form-control'
-              id='title'
+              id='author'
               value={props.book.author}
               type='text'
               name='author'
@@ -28,30 +30,11 @@ export default function MakeBook(props) {
             />
           </div>
 
-          <div className='submit-close'>
-            <button
-              className='btn btn-outline-dark  '
-              onClick={() => {
-                props.open(false);
-                props.setActiveBook({ ...props, editing: false });
-              }}
-            >
-              close
+          <div>
+            <button type='submit' className='submit-btn'>
+              {props.book.id ? "Update" : "Submit"}
             </button>
-            <div>
-              <button type='submit' className='btn btn-warning' id='submit'>
-                {props.book.id ? "Update" : "submit"}
-              </button>
-            </div>
           </div>
-
-          {/* <AiFillCloseSquare
-            size='50'
-            onClick={() => {
-              props.open(false);
-              props.setActiveBook({ ...props, editing: false });
-            }}
-          /> */}
         </div>
       </form>
     </div>

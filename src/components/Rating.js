@@ -5,10 +5,10 @@ export default function Rating(props) {
   const [rating, setRating] = React.useState(0);
   const [hover, setHover] = React.useState(null);
 
-  const { id, rate, value } = props;
+  const { id, rate_me, value } = props;
 
   React.useEffect(() => {
-    rating && rate(id, rating);
+    rating && rate_me(id, rating);
   }, [rating]);
 
   return (
